@@ -591,6 +591,54 @@ describe('build-schema', () => {
       });
     });
 
+    context('model conversion', () => {
+      @model()
+      class Category {
+        @property.array(() => Product)
+        products?: Product[];
+      }
+
+      @model()
+      class Product {
+        @property(() => Category)
+        category?: Category;
+      }
+
+      const expectedSchema = {
+        title: 'Category',
+        properties: {
+          products: {
+            type: 'array',
+            items: {$ref: '#/definitions/Product'},
+          },
+        },
+        definitions: {
+          Product: {
+            title: 'Product',
+            properties: {
+              category: {
+                $ref: '#/definitions/Category',
+              },
+            },
+          },
+          Category: {
+            title: 'Category',
+            properties: {
+              products: {
+                type: 'array',
+                items: {$ref: '#/definitions/Product'},
+              },
+            },
+          },
+        },
+      };
+
+      it('handles circular references', () => {
+        const schema = modelToJsonSchema(Category);
+        expect(schema).to.deepEqual(expectedSchema);
+      });
+    });
+
     function expectValidJsonSchema(schema: JsonSchema) {
       const ajv = new Ajv();
       const validate = ajv.compile(
