@@ -4,7 +4,7 @@
 // License text available at https://opensource.org/licenses/MIT
 
 import {expect} from '@loopback/testlab';
-import {config, Context, ContextView} from '../..';
+import {config, configBindingKeyFor, Context, ContextView} from '../..';
 
 interface RestServerConfig {
   host?: string;
@@ -39,6 +39,27 @@ describe('Context bindings - injecting configuration for bound artifacts', () =>
     ctx
       .configure('servers.rest.server1')
       .toDynamicValue(() => Promise.resolve({port: 3000}));
+
+    // Bind RestServer
+    ctx.bind('servers.rest.server1').toClass(RestServer);
+
+    // Resolve an instance of RestServer
+    // Expect server1.config to be `{port: 3000}
+    const server1 = await ctx.get<RestServer>('servers.rest.server1');
+    expect(server1.configObj).to.eql({port: 3000});
+  });
+
+  it('configures an artifact with alias', async () => {
+    const ctx = new Context();
+
+    // Configure rest server 1 to reference `rest` property of the application
+    // configuration
+    ctx
+      .configure('servers.rest.server1')
+      .toAlias(configBindingKeyFor('application', 'rest'));
+
+    // Configure the application
+    ctx.configure('application').to({rest: {port: 3000}});
 
     // Bind RestServer
     ctx.bind('servers.rest.server1').toClass(RestServer);
