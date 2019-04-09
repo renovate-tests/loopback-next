@@ -621,15 +621,6 @@ describe('build-schema', () => {
               },
             },
           },
-          Category: {
-            title: 'Category',
-            properties: {
-              products: {
-                type: 'array',
-                items: {$ref: '#/definitions/Product'},
-              },
-            },
-          },
         },
       };
 
@@ -687,6 +678,60 @@ describe('build-schema', () => {
         newProperty: {
           type: 'string',
         },
+      });
+    });
+    context('circular reference', () => {
+      @model()
+      class Category {
+        @property.array(() => Product)
+        products?: Product[];
+      }
+
+      @model()
+      class Product {
+        @property(() => Category)
+        category?: Category;
+      }
+
+      // The expected schema for Product with visited Category
+      const expectedSchemaForProduct = {
+        title: 'Product',
+        properties: {
+          category: {
+            $ref: '#/definitions/Category',
+          },
+        },
+      };
+
+      const expectedSchemaForCategory = {
+        title: 'Category',
+        properties: {
+          products: {
+            type: 'array',
+            items: {$ref: '#/definitions/Product'},
+          },
+        },
+        definitions: {
+          Product: {
+            title: 'Product',
+            properties: {
+              category: {
+                $ref: '#/definitions/Category',
+              },
+            },
+          },
+        },
+      };
+
+      it('generates the schema without running into infinite loop', () => {
+        const schema = getJsonSchema(Category);
+        expect(schema).to.deepEqual(expectedSchemaForCategory);
+      });
+
+      it('honors the visited property', () => {
+        const options = {visited: new Set(['Category'])};
+        const schema = getJsonSchema(Product, options);
+        expect(schema).to.deepEqual(expectedSchemaForProduct);
       });
     });
   });

@@ -15,8 +15,9 @@ import {JSONSchema6 as JSONSchema} from 'json-schema';
 import {JSON_SCHEMA_KEY} from './keys';
 
 export interface JsonSchemaOptions {
+  includeRelations?: boolean;
   // Track the models/titles that have been visited.
-  visited?: string[];
+  visited?: Set<string>;
 }
 
 /**
@@ -28,7 +29,8 @@ export function getJsonSchema(
   ctor: Function,
   options?: JsonSchemaOptions,
 ): JSONSchema {
-  // NOTE(shimks) currently impossible to dynamically update
+  // In the near future the metadata will be an object with
+  // different titles as keys
   const cached = MetadataInspector.getClassMetadata(JSON_SCHEMA_KEY, ctor);
 
   if (cached) {
@@ -153,7 +155,7 @@ export function metaToJsonProperty(meta: PropertyDefinition): JSONSchema {
  */
 export function modelToJsonSchema(
   ctor: Function,
-  options?: JsonSchemaOptions,
+  options: JsonSchemaOptions = {},
 ): JSONSchema {
   const meta: ModelDefinition | {} = ModelMetadataHelper.getModelMetadata(ctor);
   const result: JSONSchema = {};
@@ -163,9 +165,15 @@ export function modelToJsonSchema(
     return {};
   }
 
-  result.title = meta.title || ctor.name;
-  const isVisited =
-    options && options.visited && options.visited.includes(result.title!);
+  const title = meta.title || ctor.name;
+
+  // Break to avoid the circular reference.
+  // If the model is already visited in the call stack, it implies one or more
+  // of its referenced properties refer back to it.
+  const isVisited = options.visited && options.visited.has(title);
+  if (isVisited) return {};
+
+  result.title = title;
 
   if (meta.description) {
     result.description = meta.description;
@@ -204,19 +212,17 @@ export function modelToJsonSchema(
       continue;
     }
 
-    // Break to avoid the circular reference.
-    // If the model is already visited in the call stack, it implies one or more
-    // of its referenced properties refer back to it.
-
-    if (isVisited) break;
-
     // Use object assign to avoid polluting the original `options`.
     const getJsonSchemaOptions = Object.assign({}, options);
-    getJsonSchemaOptions.visited = getJsonSchemaOptions.visited || [];
-    getJsonSchemaOptions.visited.push(result.title!);
+    const title = result.title || '';
+    getJsonSchemaOptions.visited =
+      getJsonSchemaOptions.visited || new Set<string>();
+    getJsonSchemaOptions.visited.add(title);
 
     const propSchema = getJsonSchema(referenceType, getJsonSchemaOptions);
 
+    // If the property type refers to a visited schema,
+    // getJsonSchema() returns an empty object {} to avoid adding it to definitions
     if (propSchema && Object.keys(propSchema).length > 0) {
       result.definitions = result.definitions || {};
 
