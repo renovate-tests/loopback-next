@@ -132,9 +132,7 @@ function resolveAsViewFromConfig(
     const targetName = ResolutionSession.describeInjection(injection)!
       .targetName;
     throw new Error(
-      `The type of ${targetName} (${
-        targetType.name
-      }) is not SingleValuedContextView`,
+      `The type of ${targetName} (${targetType.name}) is not ContextView`,
     );
   }
   if (!(session && session.currentBinding)) {

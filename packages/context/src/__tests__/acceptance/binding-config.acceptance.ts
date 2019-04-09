@@ -131,4 +131,25 @@ describe('Context bindings - injecting configuration for bound artifacts', () =>
     configObj = await logger.configView.singleValue();
     expect(configObj).to.eql({level: 'DEBUG'});
   });
+
+  it('rejects injection of config view if the target type is not ContextView', async () => {
+    class Logger {
+      constructor(
+        @config.view()
+        public configView: object,
+      ) {}
+    }
+
+    const ctx = new Context();
+
+    // Bind logger configuration
+    ctx.configure('loggers.Logger').to({level: 'INFO'});
+
+    // Bind Logger
+    ctx.bind('loggers.Logger').toClass(Logger);
+
+    await expect(ctx.get<Logger>('loggers.Logger')).to.be.rejectedWith(
+      'The type of Logger.constructor[0] (Object) is not ContextView',
+    );
+  });
 });
