@@ -16,7 +16,7 @@ import {Application as ExpressApplication} from 'express';
 import pEvent from 'p-event';
 import * as path from 'path';
 
-const generateSwaggerSpec = require('loopback-swagger');
+const {generateSwaggerSpec} = require('loopback-swagger');
 const swagger2openapi = require('swagger2openapi');
 
 const debug = debugFactory('loopback:boot:lb3app');
