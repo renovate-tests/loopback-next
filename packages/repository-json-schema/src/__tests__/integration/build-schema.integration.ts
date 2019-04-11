@@ -693,16 +693,6 @@ describe('build-schema', () => {
         category?: Category;
       }
 
-      // The expected schema for Product with visited Category
-      const expectedSchemaForProduct = {
-        title: 'Product',
-        properties: {
-          category: {
-            $ref: '#/definitions/Category',
-          },
-        },
-      };
-
       const expectedSchemaForCategory = {
         title: 'Category',
         properties: {

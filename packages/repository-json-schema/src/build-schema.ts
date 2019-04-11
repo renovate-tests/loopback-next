@@ -15,7 +15,7 @@ import {JSONSchema6 as JSONSchema} from 'json-schema';
 import {JSON_SCHEMA_KEY} from './keys';
 
 export interface JsonSchemaOptions {
-  visited?: {[key: string]: JSONSchema};
+  visited?: Set<string>;
 }
 
 /**
@@ -155,7 +155,7 @@ export function modelToJsonSchema(
   ctor: Function,
   options: JsonSchemaOptions = {},
 ): JSONSchema {
-  options.visited = options.visited || {};
+  options.visited = options.visited || new Set<string>();
   const meta: ModelDefinition | {} = ModelMetadataHelper.getModelMetadata(ctor);
 
   // returns an empty object if metadata is an empty object
@@ -165,10 +165,10 @@ export function modelToJsonSchema(
 
   const title = meta.title || ctor.name;
 
-  if (title in options.visited) return options.visited[title];
+  if (options.visited.has(title)) return {};
 
   const result: JSONSchema = {title};
-  options.visited[title] = result;
+  options.visited.add(title);
 
   if (meta.description) {
     result.description = meta.description;
