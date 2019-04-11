@@ -727,12 +727,6 @@ describe('build-schema', () => {
         const schema = getJsonSchema(Category);
         expect(schema).to.deepEqual(expectedSchemaForCategory);
       });
-
-      it('honors the visited property', () => {
-        const options = {visited: new Set(['Category'])};
-        const schema = getJsonSchema(Product, options);
-        expect(schema).to.deepEqual(expectedSchemaForProduct);
-      });
     });
   });
 });

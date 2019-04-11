@@ -15,9 +15,7 @@ import {JSONSchema6 as JSONSchema} from 'json-schema';
 import {JSON_SCHEMA_KEY} from './keys';
 
 export interface JsonSchemaOptions {
-  includeRelations?: boolean;
-  // Track the models/titles that have been visited.
-  visited?: Set<string>;
+  visited?: {[key: string]: JSONSchema};
 }
 
 /**
@@ -157,9 +155,8 @@ export function modelToJsonSchema(
   ctor: Function,
   options: JsonSchemaOptions = {},
 ): JSONSchema {
-  options.visited = options.visited || new Set<string>();
+  options.visited = options.visited || {};
   const meta: ModelDefinition | {} = ModelMetadataHelper.getModelMetadata(ctor);
-  const result: JSONSchema = {};
 
   // returns an empty object if metadata is an empty object
   if (!(meta instanceof ModelDefinition)) {
@@ -168,14 +165,10 @@ export function modelToJsonSchema(
 
   const title = meta.title || ctor.name;
 
-  // Break to avoid the circular reference.
-  // If the model is already visited in the call stack, it implies one or more
-  // of its referenced properties refer back to it.
-  const isVisited = options.visited && options.visited.has(title);
-  if (isVisited) return {};
+  if (title in options.visited) return options.visited[title];
 
-  result.title = title;
-  options.visited.add(title);
+  const result: JSONSchema = {title};
+  options.visited[title] = result;
 
   if (meta.description) {
     result.description = meta.description;
@@ -216,20 +209,22 @@ export function modelToJsonSchema(
 
     const propSchema = getJsonSchema(referenceType, options);
 
-    // If the property type refers to a visited schema,
-    // getJsonSchema() returns an empty object {} to avoid adding it to definitions
-    if (propSchema && Object.keys(propSchema).length > 0) {
+    includeReferencedSchema(referenceType.name, propSchema);
+
+    function includeReferencedSchema(name: string, propSchema: JSONSchema) {
+      if (!propSchema || !Object.keys(propSchema).length) return;
       result.definitions = result.definitions || {};
 
-      // delete nested definition
+      // promote nested definition to the top level
       if (propSchema.definitions) {
         for (const key in propSchema.definitions) {
+          if (key === title) continue;
           result.definitions[key] = propSchema.definitions[key];
         }
         delete propSchema.definitions;
       }
 
-      result.definitions[referenceType.name] = propSchema;
+      result.definitions[name] = propSchema;
     }
   }
   return result;
