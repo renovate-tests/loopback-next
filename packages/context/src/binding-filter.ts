@@ -9,10 +9,35 @@ import {BindingAddress} from './binding-key';
 /**
  * A function that filters bindings. It returns `true` to select a given
  * binding.
+ *
+ * **NOTE**: We keep the generic type `T` for backward compatibility. It
+ * represents the value type for matched bindings.
  */
-export type BindingFilter<ValueType = unknown> = (
-  binding: Readonly<Binding<ValueType>>,
+// tslint:disable-next-line:no-unused
+export type BindingFilter<T = unknown> = (
+  binding: Readonly<Binding<unknown>>,
 ) => boolean;
+
+/**
+ * A type guard that asserts the value type for a binding if the filter function
+ * returns `true`. This type is very much the same as `BindingFilter` except
+ * that it instructs TypeScript compiler that the `binding` parameter is
+ * `Readonly<Binding<T>>` when the return value is `true`. For example:
+ *
+ * ```ts
+ * const interceptorFilter: BindingFilterGuard<Interceptor> = (
+ *   binding,
+ * ): binding is Readonly<Binding<Interceptor>> => binding.tagMap['interceptor'];
+ *
+ * const myBinding: Binding<unknown> = ...;
+ * if (interceptorFilter(myBinding)) {
+ *   // Now myBinding is Readonly<Binding<Interceptor>>
+ * }
+ * ```
+ */
+export type BindingFilterGuard<T = unknown> = (
+  binding: Readonly<Binding<unknown>>,
+) => binding is Readonly<Binding<T>>;
 
 /**
  * Select binding(s) by key or a filter function
