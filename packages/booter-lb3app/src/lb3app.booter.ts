@@ -25,6 +25,7 @@ const DefaultOptions: Lb3AppBooterOptions = {
   // from "/dist/application.ts" to "/legacy"
   path: '../legacy/server/server',
   mode: 'fullApp',
+  restApiRoot: '/api',
 };
 
 export class Lb3AppBooter implements Booter {
@@ -66,7 +67,8 @@ export class Lb3AppBooter implements Booter {
     // - modelDeleted
     // - remoteMethodAdded
     // - remoteMethodDisabled
-    // Note: LB4 does not support live spec updates yet.
+    // Note: LB4 does not support live spec updates yet. See
+    // https://github.com/strongloop/loopback-next/issues/2394 for details.
   }
 
   private async loadAndBootTheApp() {
@@ -103,12 +105,12 @@ export class Lb3AppBooter implements Booter {
   }
 
   private mountRoutesOnly(legacyApp: Lb3Application, spec: OpenApiSpec) {
-    // TODO(bajtos) make this configurable
-    const restApiRoot = '/api';
+    const restApiRoot = this.options.restApiRoot;
     debug('Mounting LB3 REST router at %s', restApiRoot);
     this.app.mountExpressRouter(
       restApiRoot,
       // TODO(bajtos) reload the handler when a model/method was added/removed
+      // See https://github.com/strongloop/loopback-next/issues/2394 for details.
       legacyApp.handler('rest'),
       spec,
     );
@@ -118,6 +120,7 @@ export class Lb3AppBooter implements Booter {
 export interface Lb3AppBooterOptions {
   path: string;
   mode: 'fullApp' | 'restRouter';
+  restApiRoot: string;
 }
 
 interface Lb3Application extends ExpressApplication {
