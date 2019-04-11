@@ -157,6 +157,7 @@ export function modelToJsonSchema(
   ctor: Function,
   options: JsonSchemaOptions = {},
 ): JSONSchema {
+  options.visited = options.visited || new Set<string>();
   const meta: ModelDefinition | {} = ModelMetadataHelper.getModelMetadata(ctor);
   const result: JSONSchema = {};
 
@@ -174,6 +175,7 @@ export function modelToJsonSchema(
   if (isVisited) return {};
 
   result.title = title;
+  options.visited.add(title);
 
   if (meta.description) {
     result.description = meta.description;
@@ -212,14 +214,7 @@ export function modelToJsonSchema(
       continue;
     }
 
-    // Use object assign to avoid polluting the original `options`.
-    const getJsonSchemaOptions = Object.assign({}, options);
-    const title = result.title || '';
-    getJsonSchemaOptions.visited =
-      getJsonSchemaOptions.visited || new Set<string>();
-    getJsonSchemaOptions.visited.add(title);
-
-    const propSchema = getJsonSchema(referenceType, getJsonSchemaOptions);
+    const propSchema = getJsonSchema(referenceType, options);
 
     // If the property type refers to a visited schema,
     // getJsonSchema() returns an empty object {} to avoid adding it to definitions
