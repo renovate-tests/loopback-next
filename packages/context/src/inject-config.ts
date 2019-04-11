@@ -85,9 +85,9 @@ export namespace config {
 function resolveFromConfig(
   ctx: Context,
   injection: Injection,
-  session?: ResolutionSession,
+  session: ResolutionSession,
 ): ValueOrPromise<unknown> {
-  if (!(session && session.currentBinding)) {
+  if (!session.currentBinding) {
     // No binding is available
     return undefined;
   }
@@ -104,19 +104,19 @@ function resolveFromConfig(
 function resolveAsGetterFromConfig(
   ctx: Context,
   injection: Injection,
-  session?: ResolutionSession,
+  session: ResolutionSession,
 ) {
-  if (!(session && session.currentBinding)) {
+  if (!session.currentBinding) {
     // No binding is available
     return undefined;
   }
   const meta = injection.metadata || {};
   const bindingKey = session.currentBinding.key;
   // We need to clone the session for the getter as it will be resolved later
-  session = ResolutionSession.fork(session);
+  const forkedSession = ResolutionSession.fork(session);
   return async function getter() {
     return ctx.getConfigAsValueOrPromise(bindingKey, meta.configPath, {
-      session,
+      session: forkedSession,
       optional: meta.optional,
     });
   };
@@ -125,7 +125,7 @@ function resolveAsGetterFromConfig(
 function resolveAsViewFromConfig(
   ctx: Context,
   injection: Injection,
-  session?: ResolutionSession,
+  session: ResolutionSession,
 ) {
   const targetType = inspectTargetType(injection);
   if (targetType && targetType !== ContextView) {
@@ -135,7 +135,7 @@ function resolveAsViewFromConfig(
       `The type of ${targetName} (${targetType.name}) is not ContextView`,
     );
   }
-  if (!(session && session.currentBinding)) {
+  if (!session.currentBinding) {
     // No binding is available
     return undefined;
   }
@@ -159,7 +159,7 @@ class ConfigView extends ContextView {
   }
 
   async values(session?: ResolutionSession) {
-    const configValues = await super.values();
+    const configValues = await super.values(session);
     return configValues.map(v =>
       this.configPath ? getDeepProperty(v, this.configPath) : v,
     );
