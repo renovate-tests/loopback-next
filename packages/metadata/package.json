@@ -19,17 +19,17 @@
   "copyright.owner": "IBM Corp.",
   "license": "MIT",
   "dependencies": {
-    "debug": "^4.0.1",
-    "lodash": "^4.17.11",
-    "reflect-metadata": "^0.1.10"
+    "debug": "4.1.1",
+    "lodash": "4.17.11",
+    "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
     "@loopback/build": "^1.4.3",
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/debug": "^4.1.4",
-    "@types/lodash": "^4.14.106",
-    "@types/node": "^10.11.2"
+    "@types/debug": "4.1.4",
+    "@types/lodash": "4.14.122",
+    "@types/node": "10.12.30"
   },
   "keywords": [
     "LoopBack",

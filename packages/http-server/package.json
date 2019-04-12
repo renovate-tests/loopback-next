@@ -17,14 +17,14 @@
   "copyright.owner": "IBM Corp.",
   "license": "MIT",
   "dependencies": {
-    "p-event": "^4.1.0"
+    "p-event": "4.1.0"
   },
   "devDependencies": {
     "@loopback/build": "^1.4.3",
     "@loopback/core": "^1.4.1",
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/node": "^10.11.2"
+    "@types/node": "10.12.30"
   },
   "files": [
     "README.md",

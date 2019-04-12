@@ -17,22 +17,22 @@
   "copyright.owner": "IBM Corp.",
   "license": "MIT",
   "dependencies": {
-    "cacache": "^11.0.2",
-    "debug": "^4.0.1",
-    "p-event": "^4.1.0",
-    "request": "^2.87.0",
-    "request-promise-native": "^1.0.5",
-    "rimraf": "^2.6.2"
+    "cacache": "11.3.2",
+    "debug": "4.1.1",
+    "p-event": "4.1.0",
+    "request": "2.88.0",
+    "request-promise-native": "1.0.7",
+    "rimraf": "2.6.3"
   },
   "devDependencies": {
     "@loopback/build": "^1.4.3",
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/debug": "^4.1.4",
-    "@types/node": "^10.11.2",
-    "@types/request-promise-native": "^1.0.14",
-    "@types/rimraf": "^2.0.2",
-    "delay": "^4.2.0"
+    "@types/debug": "4.1.4",
+    "@types/node": "10.12.30",
+    "@types/request-promise-native": "1.0.15",
+    "@types/rimraf": "2.0.2",
+    "delay": "4.2.0"
   },
   "keywords": [
     "LoopBack",
