@@ -24,7 +24,7 @@
     "@loopback/core": "^1.4.1",
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/node": "10.12.30"
+    "@types/node": "10.14.4"
   },
   "files": [
     "README.md",
