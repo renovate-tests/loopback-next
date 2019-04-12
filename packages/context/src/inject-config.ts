@@ -15,6 +15,7 @@ import {
 } from './inject';
 import {ResolutionSession} from './resolution-session';
 import {getDeepProperty, ValueOrPromise} from './value-promise';
+
 /**
    * Inject a property from `config` of the current binding. If no corresponding
    * config value is present, `undefined` will be injected.
@@ -82,20 +83,26 @@ export namespace config {
   };
 }
 
+/**
+ * Get the key for the current binding on which dependency injection is
+ * performed
+ * @param session Resolution session
+ */
+function getCurrentBindingKey(session: ResolutionSession) {
+  // The current binding is not set if `instantiateClass` is invoked directly
+  return session.currentBinding && session.currentBinding.key;
+}
+
 function resolveFromConfig(
   ctx: Context,
   injection: Injection,
   session: ResolutionSession,
 ): ValueOrPromise<unknown> {
-  if (!session.currentBinding) {
-    // No binding is available
-    return undefined;
-  }
-
   const meta = injection.metadata || {};
-  const binding = session.currentBinding;
-
-  return ctx.getConfigAsValueOrPromise(binding.key, meta.configPath, {
+  const bindingKey = getCurrentBindingKey(session);
+  // Return `undefined` if no current binding is present
+  if (!bindingKey) return undefined;
+  return ctx.getConfigAsValueOrPromise(bindingKey, meta.configPath, {
     session,
     optional: meta.optional,
   });
@@ -106,15 +113,13 @@ function resolveAsGetterFromConfig(
   injection: Injection,
   session: ResolutionSession,
 ) {
-  if (!session.currentBinding) {
-    // No binding is available
-    return undefined;
-  }
   const meta = injection.metadata || {};
-  const bindingKey = session.currentBinding.key;
+  const bindingKey = getCurrentBindingKey(session);
   // We need to clone the session for the getter as it will be resolved later
   const forkedSession = ResolutionSession.fork(session);
   return async function getter() {
+    // Return `undefined` if no current binding is present
+    if (!bindingKey) return undefined;
     return ctx.getConfigAsValueOrPromise(bindingKey, meta.configPath, {
       session: forkedSession,
       optional: meta.optional,
@@ -135,11 +140,9 @@ function resolveAsViewFromConfig(
       `The type of ${targetName} (${targetType.name}) is not ContextView`,
     );
   }
-  if (!session.currentBinding) {
-    // No binding is available
-    return undefined;
-  }
-  const bindingKey = session.currentBinding.key;
+  const bindingKey = getCurrentBindingKey(session);
+  // Return `undefined` if no current binding is present
+  if (!bindingKey) return undefined;
   const view = new ConfigView(
     ctx,
     binding =>
@@ -160,8 +163,8 @@ class ConfigView extends ContextView {
 
   async values(session?: ResolutionSession) {
     const configValues = await super.values(session);
-    return configValues.map(v =>
-      this.configPath ? getDeepProperty(v, this.configPath) : v,
-    );
+    const configPath = this.configPath;
+    if (!configPath) return configValues;
+    return configValues.map(v => getDeepProperty(v, configPath));
   }
 }

@@ -609,12 +609,12 @@ appCtx.configure('servers.RestServer.server2').to({protocol: 'http', port: 80});
 ### Allow configuration to be changed dynamically
 
 Some configurations are designed to be changeable dynamically, for example, the
-logging level for an application. To allow that, we introduce `@configGetter` to
-always fetch the latest value of the configuration.
+logging level for an application. To allow that, we introduce `@config.getter`
+to always fetch the latest value of the configuration.
 
 ```ts
 export class Logger {
-  @configGetter()
+  @config.getter()
   private getLevel: Getter<string>;
 
   async log(level: string, message: string) {
