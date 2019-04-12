@@ -211,20 +211,20 @@ export function modelToJsonSchema(
 
     includeReferencedSchema(referenceType.name, propSchema);
 
-    function includeReferencedSchema(name: string, propSchema: JSONSchema) {
-      if (!propSchema || !Object.keys(propSchema).length) return;
+    function includeReferencedSchema(name: string, schema: JSONSchema) {
+      if (!schema || !Object.keys(schema).length) return;
       result.definitions = result.definitions || {};
 
       // promote nested definition to the top level
-      if (propSchema.definitions) {
-        for (const key in propSchema.definitions) {
+      if (schema.definitions) {
+        for (const key in schema.definitions) {
           if (key === title) continue;
-          result.definitions[key] = propSchema.definitions[key];
+          result.definitions[key] = schema.definitions[key];
         }
-        delete propSchema.definitions;
+        delete schema.definitions;
       }
 
-      result.definitions[name] = propSchema;
+      result.definitions[name] = schema;
     }
   }
   return result;
