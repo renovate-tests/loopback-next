@@ -208,6 +208,7 @@ Introduce a new property metadata "references" (inspired by ANSI SQL):
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     }
+  }
 }
 ```
 
@@ -223,6 +224,7 @@ Support connector-specific configuration too.
         property: 'id',
       }
     }
+  }
 }
 ```
 
