@@ -20,19 +20,19 @@
   "license": "MIT",
   "dependencies": {
     "@loopback/metadata": "^1.0.13",
-    "debug": "^4.0.1",
-    "p-event": "^4.1.0",
-    "uuid": "^3.2.1"
+    "debug": "4.1.1",
+    "p-event": "4.1.0",
+    "uuid": "3.3.2"
   },
   "devDependencies": {
     "@loopback/build": "^1.4.3",
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/bluebird": "^3.5.20",
-    "@types/debug": "^4.1.4",
-    "@types/node": "^10.11.2",
-    "@types/uuid": "^3.4.3",
-    "bluebird": "^3.5.4"
+    "@types/bluebird": "3.5.26",
+    "@types/debug": "4.1.4",
+    "@types/node": "10.12.30",
+    "@types/uuid": "3.4.4",
+    "bluebird": "3.5.4"
   },
   "keywords": [
     "LoopBack",

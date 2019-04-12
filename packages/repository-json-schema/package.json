@@ -27,14 +27,14 @@
     "@loopback/context": "^1.11.0",
     "@loopback/metadata": "^1.0.13",
     "@loopback/repository": "^1.4.1",
-    "@types/json-schema": "^7.0.1"
+    "@types/json-schema": "7.0.3"
   },
   "devDependencies": {
     "@loopback/build": "^1.4.3",
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/node": "^10.11.2",
-    "ajv": "^6.5.0"
+    "@types/node": "10.12.30",
+    "ajv": "6.10.0"
   },
   "files": [
     "README.md",

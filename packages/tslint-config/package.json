@@ -9,7 +9,7 @@
   "copyright.owner": "IBM Corp.",
   "license": "MIT",
   "dependencies": {
-    "tslint-consistent-codestyle": "^1.14.1"
+    "tslint-consistent-codestyle": "1.15.1"
   },
   "peerDependencies": {
     "tslint": ">=5.11.0"
