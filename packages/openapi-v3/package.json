@@ -12,7 +12,7 @@
     "@loopback/testlab": "^1.2.4",
     "@loopback/tslint-config": "^2.0.4",
     "@types/debug": "4.1.4",
-    "@types/lodash": "4.14.122",
+    "@types/lodash": "4.14.123",
     "@types/node": "10.12.30"
   },
   "scripts": {
